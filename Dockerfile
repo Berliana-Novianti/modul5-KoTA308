@@ -1,6 +1,6 @@
-FROM php:8.4-fpm-alpine
+FROM php:8.4-fpm
 
-# Install extensions & dependencies yang dibutuhkan Laravel
+# Install dependencies bawaan Ubuntu/Debian yang stabil
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -10,19 +10,19 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
-# Install driver MySQL agar Laravel bisa konek database
+# Install ekstensi PHP pdo_mysql untuk koneksi database
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Ambil Composer terbaru
+# Ambil Composer versi terbaru
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory di dalam container
+# Atur working directory aplikasi
 WORKDIR /var/www
 
-# Copy semua file project kita ke dalam container
+# Copy seluruh source code project ke dalam container
 COPY . /var/www
 
-# Jalankan instalasi composer dependency
+# Install dependency Laravel tanpa dev tools agar ringan
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 EXPOSE 9000
