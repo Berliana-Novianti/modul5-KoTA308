@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pendaftaran Pelamar - KoTA 308</title>
+    <title>Form Pendaftaran Pelamar - Automated KoTA-308</title>
     <style>
         body { font-family: sans-serif; padding: 50px; }
         form { border: 1px solid #ccc; padding: 20px; width: 300px; }

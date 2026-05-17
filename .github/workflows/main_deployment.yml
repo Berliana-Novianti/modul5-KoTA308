@@ -1,0 +1,38 @@
+name: CI/CD Pipeline KoTA-308
+
+# Pipeline otomatis jalan setiap Berlin melakukan git push ke branch main
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Memberikan izin agar pipeline bisa upload Docker Image ke GitHub Packages
+
+    steps:
+    # 1. Mengambil salinan kode sumber dari repositori GitHub
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Autentikasi dan Login ke GitHub Container Registry (GHCR)
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }} # Otomatis menggunakan username GitHub kamu
+        password: ${{ secrets.GITHUB_TOKEN }} # Token keamanan otomatis bawaan GitHub
+
+    # 3. Proses Build Docker Image dan Push ke Registry
+    - name: Build and Push Docker Image
+      run: |
+        # Mengubah nama image menjadi lowercase agar sesuai standar GitHub Packages
+        IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}/app-pelamar:latest" | tr '[:upper:]' '[:lower:]')
+        
+        echo "Memulai proses Automated Build..."
+        docker build -t $IMAGE_NAME .
+        
+        echo "Memulai proses Automated Push..."
+        docker push $IMAGE_NAME
